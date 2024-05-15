@@ -21,7 +21,14 @@ for i in range(len(x_values)):
 
 print(y1_values, y2_values, y3_values)
 
-layout = dbc.Container([          
+layout = dbc.Container([
+    html.Br(), 
+    dbc.Row([dbc.Col(
+        html.H4('Titulo1', style = {'text-align':'center'})
+    ), 
+    dbc.Col(
+        html.H4('Titulo2', style = {'text-align':'center'})
+    )]),        
     dbc.Row([
         dbc.Col(
             dcc.Graph(
@@ -42,11 +49,10 @@ layout = dbc.Container([
                         )
                     ],
                     'layout': go.Layout(
-                        title='Experimentados y en entrenamiento por mes',
                         height=390
                     )
                 }
-            ),
+            ), 
             width=6
         ),
 
@@ -63,7 +69,6 @@ layout = dbc.Container([
                         )
                     ],
                     'layout': go.Layout(
-                        title='Costo mensual',
                         height = 390
                     )
                 }
