@@ -75,7 +75,7 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             html.Div([
-                html.H3('Trabajadores actuales'),
+                html.H6('Trabajadores actuales'),
                 html.H4(f'61')
 
             ], className='text-center')
@@ -83,28 +83,28 @@ layout = dbc.Container([
         
         dbc.Col(
             html.Div([
-                html.H3('Total trabajadores'),
+                html.H6('Total trabajadores'),
                 html.H4(f'{int(vars[1] + sum(vars[int(len(vars)/2):]))}')
             ], className='text-center')
         ),
         
         dbc.Col(
             html.Div([
-                html.H3('Costo'),
+                html.H6('Costo'),
                 html.H4(f'${int(sum(y3_values))}')
             ], className='text-center')
         ),
         
         dbc.Col(
             html.Div([
-                html.H3('Costo experimentados'),
-                html.H4(f'${int(sum(y1_values)*2000)}')
-            ], className='text-center')
+                html.H6('Costo experimentados', className = 'card-header'),
+                html.H4(f'${int(sum(y1_values)*2000)}', className = 'card-body')
+            ], className = 'card text-white bg-primary mb-3', style = {'text-align':'center'})
         ),
 
         dbc.Col(
             html.Div([
-                html.H3('Costo entrenamiento'),
+                html.H6('Costo entrenamiento'),
                 html.H4(f'${int(sum(y2_values)*1000)}')
 
             ], className='text-center')
