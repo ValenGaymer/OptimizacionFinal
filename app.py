@@ -5,14 +5,14 @@ import dash_bootstrap_components as dbc
 import model as modelo
 import numpy as np
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY], use_pages=True)
 
 app.layout = html.Div(
     [
         html.Div([
                 html.H6(''),
                 html.H1('  CSL Tech'),
-            ],className= 'titulos', style={'fontSize':50, 'textAlign':'left', 'padding-left': 20}),
+            ],className= 'text-success'),
 
         html.Div([
             dcc.Link(page['name']+"  |  ", href=page['path'])
@@ -25,6 +25,9 @@ app.layout = html.Div(
     ]
 )
 
+# Callbacks de otras pags
+from pages.modelp import layout, register_callbacks
+register_callbacks(app)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
