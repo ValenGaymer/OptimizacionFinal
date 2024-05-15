@@ -6,10 +6,23 @@ dash.register_page(__name__)
 
 df = px.data.tips()
 
+ALLOWED_TYPES = (
+    "text", "number", "password", "email", "search",
+    "tel", "url", "range", "hidden",
+)
+ 
 layout = html.Div(
-    [ html.H1('Prontite')
-        #dcc.RadioItems([x for x in df.day.unique()], id='day-choice'),
-        #dcc.Graph(id='bar-fig',
-        #          figure=px.bar(df, x='smoker', y='total_bill'))
+    [html.H1('kie'),
+    html.Div([dcc.Input(
+            id="input_{}".format('text'),
+            type='text',
+            placeholder="input type {}".format('text'),
+        ), html.Br(),
+    dcc.Input(
+            id="input_{}".format('number'),
+            type='number',
+            placeholder="input type {}".format('number'),
+        )]
+    )
     ]
 )
