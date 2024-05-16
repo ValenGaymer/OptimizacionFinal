@@ -49,6 +49,28 @@ layout = html.Div(
                                 )
                             ]
                         ),
+                        html.Div(
+                            [
+                                html.H6('Tasa de abandono de trabajadores: ', className='form-label mt-4'),
+                                dcc.Input(
+                                    id='input-tasa',
+                                    type='number',
+                                    placeholder='Ingrese',
+                                    className='input-group-text'
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            [
+                                html.H6('Trabajadores experimentados iniciales: ', className='form-label mt-4'),
+                                dcc.Input(
+                                    id='input-expi',
+                                    type='number',
+                                    placeholder='Ingrese',
+                                    className='input-group-text'
+                                )
+                            ]
+                        ),
                         html.Br(),
                         html.Button('Confirmar', id='btn-confirmar', className='btn btn-primary')
                     ],
@@ -79,17 +101,25 @@ def register_callbacks(app):
         Input('btn-confirmar', 'n_clicks'),
         State('input-experimentados', 'value'),
         State('input-entrenamiento', 'value'),
-        State('input-meses', 'value')
+        State('input-meses', 'value'),
+        State('input-tasa', 'value'),
+        State('input-expi', 'value')
     )
-    def actualizar_datos(n_clicks, experimentados, entrenamiento, meses):
+    def actualizar_datos(n_clicks, experimentados, entrenamiento, meses, tasa, expi):
         if n_clicks is None:
             return []
         datos = [
-            html.Li(f'Pago de trabajadores experimentados: {experimentados}', 
-                    className = 'card border-primary mb-3', style = {'max-width': 380}),
+            html.Li(f' Pago de trabajadores experimentados: {experimentados}', 
+                    className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
             html.Li(f'Pago de trabajadores en entrenamiento: {entrenamiento}', 
-                    className = 'card border-primary mb-3', style = {'max-width': 380}),
+                    className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
             html.Li(f'Número de meses: {meses}', 
-                    className = 'card border-primary mb-3', style = {'max-width': 380})
+                    className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
+            html.Li(f'Tasa de abandono: {tasa}', 
+                    className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
+            html.Li(f'Trabajadores experimentados iniciales:: {expi}', 
+                    className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10})
         ]
+
+        datamodel = [experimentados, entrenamiento, meses, tasa, expi]
         return datos
