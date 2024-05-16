@@ -24,7 +24,7 @@ print(y1_values, y2_values, y3_values)
 layout = dbc.Container([
     html.Br(), 
     dbc.Row([dbc.Col(
-        html.H4('Titulo1', style = {'text-align':'center'})
+        html.H4('Cantidad de trabajadores por mes', style = {'text-align':'center'})
     ), 
     dbc.Col(
         html.H4('Titulo2', style = {'text-align':'center'})
@@ -39,7 +39,8 @@ layout = dbc.Container([
                             x=x_values,
                             y=y1_values,
                             mode='lines',
-                            name='Experimentados'
+                            name='Experimentados',
+                            line ={'color': '#ffc107'}
                         ),
                         go.Scatter(
                             x=x_values,
@@ -80,39 +81,39 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             html.Div([
-                html.H6('Trabajadores actuales'),
-                html.H4(f'61')
+                html.H6('Trabajadores actuales', className = 'card-header', style={'text-align':'center', 'height': '4rem'}),
+                html.H4(f'61', className = 'card-body'),
 
-            ], className='text-center')
+            ], className='card text-white bg-primary mb-3', style = {'text-align':'center', 'width': '12rem', 'height': '7rem'} ), align='center'
         ),
         
         dbc.Col(
             html.Div([
-                html.H6('Total trabajadores'),
-                html.H4(f'{int(vars[1] + sum(vars[int(len(vars)/2):]))}')
-            ], className='text-center')
+                html.H6('Total trabajadores', className ='card-header', style={'text-align':'center', 'height': '4rem'} ),
+                html.H4(f'{int(vars[1] + sum(vars[int(len(vars)/2):]))}',className = 'card-body')
+            ], className='card text-white bg-primary mb-3', style = {'text-align':'center', 'width': '12rem', 'height': '7rem'} ), align='center'
         ),
         
         dbc.Col(
             html.Div([
-                html.H6('Costo'),
-                html.H4(f'${int(sum(y3_values))}')
-            ], className='text-center')
+                html.H6('Costo', className = 'card-header', style={'text-align':'center', 'height': '4rem'}),
+                html.H4(f'${int(sum(y3_values))}', className = 'card-body')
+            ], className='card text-white bg-primary mb-3', style = {'text-align':'center', 'width': '12rem', 'height': '7rem'} ), align='center'
         ),
         
         dbc.Col(
             html.Div([
-                html.H6('Costo experimentados', className = 'card-header'),
+                html.H6('Costo experimentados', className = 'card-header', style={'text-align':'center', 'height': '4rem'}),
                 html.H4(f'${int(sum(y1_values)*2000)}', className = 'card-body')
-            ], className = 'card text-white bg-primary mb-3', style = {'text-align':'center'})
+            ], className = 'card text-white bg-primary mb-3', style = {'text-align':'center', 'width': '12rem', 'height': '7rem'} ), align='center'
         ),
 
         dbc.Col(
             html.Div([
-                html.H6('Costo entrenamiento'),
-                html.H4(f'${int(sum(y2_values)*1000)}')
+                html.H6('Costo entrenamiento', className='card-header', style={'text-align':'center', 'height': '4rem'}),
+                html.H4(f'${int(sum(y2_values)*1000)}', className ='card-body')
 
-            ], className='text-center')
+            ], className='card text-white bg-primary mb-3', style = {'text-align':'center', 'width': '12rem', 'height': '7rem'} ), align='center'
         )
     ], className='mt-4')
 ], fluid=True)
