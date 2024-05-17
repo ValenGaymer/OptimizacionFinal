@@ -88,7 +88,8 @@ layout = html.Div(
         html.Br(),
         html.Div(
             [
-                html.H4('Restricciones')
+                html.H4('Restricciones'),
+                html.Div(id='meses-container')
             ]
         )
     ],
@@ -96,6 +97,7 @@ layout = html.Div(
 )
 
 def register_callbacks(app):
+
     @app.callback(
         Output('lista-datos', 'children'),
         Input('btn-confirmar', 'n_clicks'),
@@ -105,7 +107,8 @@ def register_callbacks(app):
         State('input-tasa', 'value'),
         State('input-expi', 'value')
     )
-    def actualizar_datos(n_clicks, experimentados, entrenamiento, meses, tasa, expi):
+
+    def actualizar_iniciales(n_clicks, experimentados, entrenamiento, meses, tasa, expi):
         if n_clicks is None:
             return []
         datos = [
@@ -117,9 +120,38 @@ def register_callbacks(app):
                     className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
             html.Li(f'Tasa de abandono: {tasa}', 
                     className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10}),
-            html.Li(f'Trabajadores experimentados iniciales:: {expi}', 
+            html.Li(f'Trabajadores experimentados iniciales: {expi}', 
                     className = 'card border-primary mb-3', style = {'max-width': 380, 'text-align':'center', 'padding':10})
         ]
 
         datamodel = [experimentados, entrenamiento, meses, tasa, expi]
         return datos
+    
+    @app.callback(
+        Output('meses-container', 'children'),
+        Input('btn-confirmar', 'n_clicks'),
+        State('input-meses', 'value')
+    )
+    def generar_inputs_rest(n_clicks, meses):
+        if meses is None or meses <= 0:
+            return []
+
+        inputs = []
+        for i in range(meses):
+            inputs.append(
+                html.Div(
+                    [
+                        html.H6(f'Mes {i + 1}: ', className='form-label mt-4'),
+                        dcc.Input(
+                            id=f'input-mes-{i + 1}',
+                            type='number',
+                            placeholder=f'Ingrese datos para el mes {i + 1}',
+                            className='input-group-text'
+                        )
+                    ],
+                    style={'marginBottom': '10px'}
+                )
+            )
+        
+        return inputs
+    
