@@ -5,8 +5,8 @@ import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 import model as modelo
 import numpy as np
-
-dash.register_page(__name__, path='/')
+app = dash.Dash(__name__)
+dash.register_page(__name__, path='/', name="Modelo")
 
 vars, func = modelo.model()
 
@@ -50,12 +50,19 @@ layout = dbc.Container([
                         )
                     ],
                     'layout': go.Layout(
-                        height=390
-                    )
-                }
-            ), 
-            width=6
-        ),
+                height=390,
+                plot_bgcolor='#f8f9fa',  
+                paper_bgcolor='#ffffff',  
+                margin={'t': 40, 'b': 40, 'l': 40, 'r': 40},  
+                xaxis={'title': 'Cantidad trabajadores'},  
+                yaxis={'title': 'Mes'}, 
+                legend={'x': 0.5, 'y': 1.1, 'bgcolor': '#ffffff', 'bordercolor': '#cccccc', 'borderwidth': 1},  
+                showlegend=True  
+            )
+        }
+    ), 
+    width=6
+),
 
         dbc.Col(
             dcc.Graph(
@@ -69,10 +76,18 @@ layout = dbc.Container([
                             name='Variable 2'
                         )
                     ],
-                    'layout': go.Layout(
-                        height = 390
-                    )
+                     'layout': go.Layout(
+                height=390,
+                plot_bgcolor='#f8f9fa',  
+                paper_bgcolor='#ffffff',  
+                margin={'t': 40, 'b': 40, 'l': 40, 'r': 40},  
+                xaxis={'title': 'Cantidad trabajadores'},  
+                yaxis={'title': 'Mes'}, 
+                legend={'x': 0.5, 'y': 1.1, 'bgcolor': '#ffffff', 'bordercolor': '#cccccc', 'borderwidth': 1},  
+                showlegend=True  
+                     )
                 }
+            
             ),
             width=6
         )

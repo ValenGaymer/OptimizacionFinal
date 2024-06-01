@@ -3,7 +3,7 @@ from dash import dcc, html
 import plotly.express as px
 from dash.dependencies import Input, Output, State
 
-dash.register_page(__name__)
+dash.register_page(__name__, path='/', name="Datos")
 
 meses_tx = ['enero', 'febrero', 'marzo', 'abril', 
          'mayo', 'junio', 'julio', 'agosto', 
