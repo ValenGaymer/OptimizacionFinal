@@ -21,5 +21,11 @@ app.layout = html.Div([
     
     dash.page_container
 ], className="col-8 mx-auto")
+
+
+from pages.Datos import layout, register_callbacks
+register_callbacks(app)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run_server(debug=True)
+    
