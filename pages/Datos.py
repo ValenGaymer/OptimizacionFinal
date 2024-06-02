@@ -3,6 +3,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.dependencies import ALL
 
+app = dash.Dash(__name__)
 dash.register_page(__name__)
 
 global meses_tx
@@ -63,7 +64,8 @@ layout = html.Div(
                                     type='number',
                                     placeholder='Ingrese',
                                     className='input-group-text'
-                                )
+                                ),
+                                html.Div(id='output-div') 
                             ]
                         ),
                         html.Div(
@@ -122,6 +124,8 @@ layout = html.Div(
 )
 
 def register_callbacks(app):
+    
+    
 
     @app.callback(
         Output('lista-datos', 'children'),
@@ -254,5 +258,6 @@ def register_callbacks(app):
             if mes_act == datamodel[2] + 1:
                 return {'display': 'none'}
             
-            return {'display': 'block'}  
+            return {'display': 'block'} 
+        
         
