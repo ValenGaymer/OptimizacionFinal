@@ -7,7 +7,7 @@ import numpy as np
 from dash.dependencies import Input, Output 
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True) 
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True) 
 
 app.layout = html.Div([
     html.Br(),
