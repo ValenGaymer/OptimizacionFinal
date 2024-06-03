@@ -1,7 +1,7 @@
 from pulp import LpMinimize, LpProblem, LpVariable, LpInteger
  
 
-def model():
+def model_inac():
     func = LpProblem("Problema", LpMinimize)
 
     x1 = LpVariable("x1", lowBound=0, cat=LpInteger)
