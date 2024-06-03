@@ -23,6 +23,7 @@ app.layout = html.Div([
     dash.page_container
 ], className="col-8 mx-auto")
 
+app.title = 'V2Solutions'
 from pages.Datos import layout, register_callbacks
 
 register_callbacks(app)

@@ -29,8 +29,6 @@ def cargar_datos():
     y4_values = [costos[0]*y1 for y1 in y1_values]
     y5_values = [costos[1]*y2 for y2 in y2_values]
 
-    print(f'Variables recibidas: {vars}')
-    print(y1_values, y2_values, y3_values)
 
     return x_values, y1_values, y2_values, y3_values, y4_values, y5_values, vars, costos
 
@@ -49,23 +47,36 @@ layout = dbc.Container([
         )]),
     dbc.Row([
         dbc.Col(
-            dcc.Graph(
-                id='graph1'
-            ),
-            width=6
+            dbc.Tabs(
+                [
+                    dbc.Tab(dcc.Graph(id='graph1'),
+                    label="Gráfica", tab_id="grafica-1"),
+                    dbc.Tab(html.Div(id = 'res-1'),label="Información", tab_id="info-1"),
+                ],
+                id="card-trabajadores",
+                active_tab="grafica-1",
+            ), width=6
         ),
         dbc.Col(
-            dcc.Graph(
-                id='graph2'
-            ),
-            width=6
+            dbc.Tabs(
+                [
+                    dbc.Tab(dcc.Graph(id='graph2'),
+                    label="Gráfica", tab_id="grafica-2"),
+                    dbc.Tab(html.Div(id = 'res-2'),label="Información", tab_id="info-2"),
+                ],
+                id="card-nomina",
+                active_tab="grafica-2",
+            ), width=6
         )
     ]),
-    dbc.Row(id = 'cards', className='mt-4')
-], fluid=True)
+    dbc.Row(id = 'cards', className='mt-4'), html.Div(
+    html.H6('Valentina Cabrera y Valentina Bustamante', className = 'badge bg-dark', style={'font-size':'12px'}), 
+    style={'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center', 'justifyContent': 'center'})
+    
+    ], fluid=True)
 
 @dash.callback(
-    [Output('graph1', 'figure'), Output('graph2', 'figure')],
+    [Output('graph1', 'figure'), Output('graph2', 'figure'), Output('res-1','children'), Output('res-2','children')],
     [Input('url', 'pathname'), Input('interval-component', 'n_intervals')]
 )
 def update_graphs(pathname, n):
@@ -132,8 +143,17 @@ def update_graphs(pathname, n):
             showlegend=True
         )
     }
+    res1 = []
+    for i in range(len(x_values)):
+        res1.append(html.H5(f'{x_values[i].capitalize()}:',className = 'badge bg-light'))
+        res1.append(html.H6(f'En el mes de {x_values[i]}, deberían haber {int(y1_values[i])} trabajadores experimentados y {int(y2_values[i])} en entrenamiento.', style={'font-size':'15px', 'padding-left':'12px'}))
 
-    return fig1, fig2
+    res2 = []
+    for i in range(len(x_values)):
+        res2.append(html.H5(f'{x_values[i].capitalize()}:',className = 'badge bg-light'))
+        res2.append(html.H6(f'En el mes de {x_values[i]}, se pagarían ${int(y3_values[i])} en total, con ${int(y4_values[i])} en trabajadores experimentados y ${int(y5_values[i])} en entrenamiento.', style={'font-size':'15px', 'padding-left':'12px'}))
+    
+    return fig1, fig2, res1, res2
 
 
 @dash.callback(
@@ -149,31 +169,31 @@ def actualizar_card(pathname, n):
             html.Div([
                 html.H6('Trabajadores finales', className='card-header', style={'text-align': 'center', 'height': '4rem'}),
                 html.H4(f'{int(vars[int(len(vars)/2) - 1] + vars[-1])}', className='card-body'),
-            ], className='card text-white bg-primary mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
+            ], className='card text-white bg-dark mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
         ),
         dbc.Col(
             html.Div([
                 html.H6('Total de trabajadores', className='card-header', style={'text-align': 'center', 'height': '4rem'}),
                 html.H4(f'{int(vars[1] + sum(vars[int(len(vars)/2):]))}', className='card-body')
-            ], className='card text-white bg-primary mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
+            ], className='card text-white bg-dark mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
         ),
         dbc.Col(
             html.Div([
-                html.H6('Costo', className='card-header', style={'text-align': 'center', 'height': '4rem'}),
+                html.H6(['Costo', html.Br(), 'total'], className='card-header', style={'text-align': 'center', 'height': '4rem'}),
                 html.H4(f'${int(sum(y3_values))}', className='card-body')
-            ], className='card text-white bg-primary mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
+            ], className='card border-dark mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
         ),
         dbc.Col(
             html.Div([
                 html.H6('Costo experimentados', className='card-header', style={'text-align': 'center', 'height': '4rem'}),
                 html.H4(f'${int(sum(y1_values) * costos[0])}', className='card-body')
-            ], className='card text-white bg-primary mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
+            ], className='card border-dark mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
         ),
         dbc.Col(
             html.Div([
                 html.H6('Costo entrenamiento', className='card-header', style={'text-align': 'center', 'height': '4rem'}),
                 html.H4(f'${int(sum(y2_values) * costos[1])}', className='card-body')
-            ], className='card text-white bg-primary mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
+            ], className='card border-dark mb-3', style={'text-align': 'center', 'width': '12rem', 'height': '7rem'}), align='center'
         )
     ]
 

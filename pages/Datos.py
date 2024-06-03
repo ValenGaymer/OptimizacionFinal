@@ -144,7 +144,18 @@ layout = html.Div(
             [
                 html.H4('Restricciones'),
                 html.Div(id = 'n-rest'),
-                html.Div(id='meses-container')
+                html.Div(
+                    [
+                        dcc.Input(
+                            id=f'input-mes',
+                            type='number',
+                            placeholder=f'Ingrese horas mínimas',
+                            className='input-group-text'
+                        ),
+                        html.Button('Siguiente restricción', id='btn-rest', className='btn btn-primary')
+
+                    ]
+                , id='meses-container', style = {'display': 'none'})
             ]
         ),
         html.Div(id='btn-modelo-container', style={'display': 'none'}, children=[
@@ -168,7 +179,8 @@ def register_callbacks(app):
         State('input-tasa', 'value'),
         State('input-expi', 'value'),
         State('input-htrab', 'value'),
-        State('input-hent', 'value')
+        State('input-hent', 'value'),
+        prevent_initial_callback = True
     )
     def actualizar_iniciales(n_clicks, experimentados, entrenamiento, meses, tasa, expi,htrab,hent):
 
@@ -210,42 +222,22 @@ def register_callbacks(app):
         ]
 
         datamodel = [experimentados, entrenamiento, meses, tasa, expi, htrab, hent]
-        print(datamodel)
         return datos
     
     @app.callback(
-        Output('meses-container', 'children'),
+        Output('meses-container', 'style'),
         Input('btn-confirmar', 'n_clicks'),
-        State('input-meses', 'value')
+        State('input-meses', 'value'),
+        prevent_initial_callback = True
     )
     def generar_inputs_rest(n_clicks, meses):
+        if meses is None or meses <= 0 or meses > 12:
+            return {'display': 'none'}
+        else:
+            global restm
+            restm = []
+            return {'display': 'block', 'marginBottom': '10px'}
 
-        if meses is None or meses <= 0:
-            return []
-        
-        if meses > 12:
-            return html.H6('Meses inválidos. Ingrese un valor entre 1 y 12.', className='badge rounded-pill bg-warning')
-
-        inputs = []
-        global restm
-        global datamodel
-        print(datamodel)
-
-        restm = []
-        print('Se reinician restricciones - - - - - - - - - - - - -- - - - - - - - -- - - - - ')
-        return html.Div(
-                    [
-                        dcc.Input(
-                            id=f'input-mes',
-                            type='number',
-                            placeholder=f'Ingrese horas mínimas',
-                            className='input-group-text'
-                        ),
-                        html.Button('Siguiente restricción', id='btn-rest', className='btn btn-primary')
-
-                    ],
-                    style={'marginBottom': '10px'}
-                )
     
     @app.callback(
         Output('n-rest', 'children'),
@@ -261,7 +253,12 @@ def register_callbacks(app):
 
         triggered_id = dash.ctx.triggered_id
         print(mes_act)
+        print(restm)
         print(triggered_id)
+
+        if triggered_id == 'btn-confirmar':
+            mes_act = mes_act + 1
+            return html.H6(f'Restricción para el mes de enero')
         
         if triggered_id == 'btn-rest'  and mes_act < datamodel[2]:
             if mes_act != 0:
@@ -278,23 +275,23 @@ def register_callbacks(app):
 
     @app.callback(
             Output('btn-rest', 'style'),
-            Input('btn-rest', 'n_clicks')
+            Input('btn-rest', 'n_clicks'),
+            prevent_initial_callback = True
         )
     def mostrar_btn_modelo(n_clicks):
             global mes_act
-            print(mes_act == datamodel[2] + 1)
-            if mes_act == datamodel[2] + 1:
+            if mes_act == datamodel[2]:
                 return {'display': 'none'}
             
             return {'display': 'block'} 
     
     @app.callback(
             Output('btn-modelo-container', 'style'),
-            Input('btn-rest', 'n_clicks')
+            Input('btn-rest', 'n_clicks'),
+            prevent_initial_callback = True
         )
     def mostrar_btn_modelo(n_clicks):
             global mes_act
-            print(mes_act == datamodel[2] + 1)
             if mes_act == datamodel[2] + 1:
                 return {'display': 'block'}
             
@@ -322,7 +319,7 @@ def register_callbacks(app):
         modelito = model()
 
         if modelito.status == -1:
-            resultado.append(html.H6(f'Estado -1, el modelo no es factible. Por favor, intente con restricciones diferentes', className= 'text-danger', style = {'align':'center'}))
+            resultado.append(html.H6(f'El modelo no es factible. Por favor, intente con restricciones diferentes. Puede ver los resultados del modelo, no son exactos.', className= 'text-danger', style = {'align':'center'}))
 
         return resultado
 
@@ -390,11 +387,7 @@ def model():
     for i in range(datamodel[2] - 1):
         func += varx[i + 1] == varx[i]*(1 - datamodel[3]) + vary[i], f'R{i}'
 
-    print('resolver')
     func.solve()
-
-    print("Status:", func.status)
-    print("Optimal Solution:")
     vars = []
     for i in range(datamodel[2]):
         vars.append(varx[i].value())
@@ -402,15 +395,10 @@ def model():
     for i in range(datamodel[2]):
         vars.append(vary[i].value())
 
-    print("Optimal Value of Objective Function:", func.objective.value())
-    print(func.objective)
-    print(func.constraints)
-    print(vars)
-
     costos = [datamodel[0],datamodel[1]]
     while len(costos)!= len(vars):
         costos.append(0)
-        
+
     df = pd.DataFrame({'variables':vars, 'costos':costos})
     df.to_csv('varsmod.csv')
 

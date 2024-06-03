@@ -2,7 +2,6 @@ import dash
 from dash import dcc, html
 import plotly.express as px
 
-dash.register_page(__name__)
 
 layout = html.Div([
     html.H2('V2 Solutions: ¡Tu aliado en la optimización!'),
