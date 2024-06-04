@@ -1,11 +1,11 @@
-import dash 
-from dash import dcc, html 
-import dash_bootstrap_components as dbc 
+import dash
+from dash import dcc, html
+import dash_bootstrap_components as dbc
+from flask import Flask
+import os
 
-
-
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True) 
+server = Flask(__name__)
+app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True)
 
 app.layout = html.Div([
     html.Br(),
@@ -22,11 +22,9 @@ app.layout = html.Div([
 
 app.title = 'V2Solutions'
 
+# Importa tus páginas y registra callbacks
 from pages.Datos import layout, register_callbacks
-
 register_callbacks(app)
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-    
