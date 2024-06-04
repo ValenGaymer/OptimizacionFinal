@@ -10,7 +10,9 @@ app = dash.Dash(__name__)
 dash.register_page(__name__)
 
 global meses_tx
+global campos_llenos
 mes_act = 0
+campos_llenos = False
 
 restm = []
 
@@ -18,7 +20,7 @@ meses_tx = ['enero', 'febrero', 'marzo', 'abril',
             'mayo', 'junio', 'julio', 'agosto', 
             'septiembre', 'octubre', 'noviembre', 'diciembre']
 
-datamodel = [0,0,0,0,0,0,0]
+datamodel = [0,0,12,0,0,0,0]
 
 layout = html.Div(
     [
@@ -152,7 +154,7 @@ layout = html.Div(
                             placeholder=f'Ingrese horas mínimas',
                             className='input-group-text'
                         ),
-                        html.Button('Siguiente restricción', id='btn-rest', className='btn btn-primary')
+                        html.Button('Enviar restricción', id='btn-rest', className='btn btn-primary')
 
                     ]
                 , id='meses-container', style = {'display': 'none'})
@@ -183,7 +185,7 @@ def register_callbacks(app):
         prevent_initial_callback = True
     )
     def actualizar_iniciales(n_clicks, experimentados, entrenamiento, meses, tasa, expi,htrab,hent):
-
+        global campos_llenos
         global datamodel
         global mes_act
         mes_act = 0 
@@ -194,16 +196,20 @@ def register_callbacks(app):
         # Campos vacíos
         if experimentados is None or entrenamiento is None or meses is None or tasa is None or expi is None or htrab is None or hent is None:
             return [html.Li('Por favor, rellene todos los campos.', 
-                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', style={'text-align':'center', 'padding':10})]
+                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', 
+                            style={'text-align':'center', 'padding':10})]
         
         # Campos mal puestos
         if float(tasa) >= 1 or float(tasa) <= 0:
             return [html.Li('Tasa de abandono no válida', 
-                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', style={'text-align':'center', 'padding':10})]
+                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', 
+                            style={'text-align':'center', 'padding':10})]
         
         if int(meses) >= 13 or int(meses) <= 0:
             return [html.Li('Número de meses no válido', 
-                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', style={'text-align':'center', 'padding':10})]
+                            className='list-group-item list-group-item-danger d-flex justify-content-between align-items-center', 
+                            style={'text-align':'center', 'padding':10})]
+        
         datos = [
             html.Li(f'Pago de trabajadores experimentados: {experimentados}', 
                     className='list-group-item d-flex justify-content-between align-items-center', style={'text-align':'center', 'padding':10}),
@@ -222,6 +228,7 @@ def register_callbacks(app):
         ]
 
         datamodel = [experimentados, entrenamiento, meses, tasa, expi, htrab, hent]
+        campos_llenos = True
         return datos
     
     @app.callback(
@@ -237,7 +244,6 @@ def register_callbacks(app):
             global restm
             restm = []
             return {'display': 'block', 'marginBottom': '10px'}
-
     
     @app.callback(
         Output('n-rest', 'children'),
@@ -260,18 +266,22 @@ def register_callbacks(app):
             mes_act = mes_act + 1
             return html.H6(f'Restricción para el mes de enero')
         
-        if triggered_id == 'btn-rest'  and mes_act < datamodel[2]:
+        if triggered_id == 'btn-rest'  and mes_act < datamodel[2] and mes is not None:
             if mes_act != 0:
                 restm.append(mes)
                 print('guardó primer if: ',restm)
             mes_act = mes_act + 1
             return html.H6(f'Restricción para el mes de {meses_tx[mes_act - 1]}')
         
-        if triggered_id == 'btn-rest' and mes_act == datamodel[2]:
+        if triggered_id == 'btn-rest' and mes_act == datamodel[2] and mes is not None:
             mes_act = mes_act + 1
             restm.append(mes)
             print('guardó segundo if: ',restm)
             return html.H6(f'Restricción completadas')
+        
+        if triggered_id == 'btn-rest' and mes is None:
+            print('No metió nada')
+            return html.H6(f'Restricción para el mes de {meses_tx[mes_act - 1]}')
 
     @app.callback(
             Output('btn-rest', 'style'),
@@ -280,10 +290,11 @@ def register_callbacks(app):
         )
     def mostrar_btn_modelo(n_clicks):
             global mes_act
-            if mes_act == datamodel[2]:
+            global datamodel
+            if mes_act == datamodel[2] + 1:
                 return {'display': 'none'}
             
-            return {'display': 'block'} 
+            return {'display': 'block'}
     
     @app.callback(
             Output('btn-modelo-container', 'style'),
@@ -292,7 +303,12 @@ def register_callbacks(app):
         )
     def mostrar_btn_modelo(n_clicks):
             global mes_act
+            global datamodel
+            print('mostrar_btn_modelo',mes_act, datamodel)
+            print(mes_act == datamodel[2] + 1)
+
             if mes_act == datamodel[2] + 1:
+                print('Aparece btn modelo')
                 return {'display': 'block'}
             
             return {'display': 'none'}
@@ -308,6 +324,8 @@ def register_callbacks(app):
         global meses_tx
         global restm
         global mes_act
+        global campos_llenos
+        campos_llenos = False
 
         resultado = []
         if mes_act!= 0:
@@ -317,10 +335,11 @@ def register_callbacks(app):
                 resultado.append(html.H6(f'Horas mínimas para el mes de {meses_tx[i]}:  {restm[i]}', className= 'text-body-secondary'))
         
         modelito = model()
-
-        if modelito.status == -1:
-            resultado.append(html.H6(f'El modelo no es factible. Por favor, intente con restricciones diferentes. Puede ver los resultados del modelo, no son exactos.', className= 'text-danger', style = {'align':'center'}))
-
+        try:
+            if modelito.status == -1:
+                resultado.append(html.H6(f'El modelo no es factible. Por favor, intente con restricciones diferentes. Puede ver los resultados del modelo, no son exactos.', className= 'text-danger', style = {'align':'center'}))
+        except:
+            pass
         return resultado
 
 func = LpProblem("Problema", LpMinimize)
@@ -367,7 +386,7 @@ def model():
     exp1 = 0
     exp2 = 0
 
-    if datamodel == [0,0,0,0,0,0,0]:
+    if datamodel == [0,0,12,0,0,0,0]:
         datamodel = [2000,1000,5,0.1,50,160,50]
         restm = [6000,7000,8000,9500,11000]
 
@@ -378,28 +397,32 @@ def model():
         exp2 += vary[i]
 
     func += datamodel[0]*(exp1) + datamodel[1]*(exp2), "Función objetivo"
+    try:
+        for i in range(datamodel[2]):
+            func += datamodel[5]*varx[i] - datamodel[6]*vary[i] >= restm[i], f'C{i}'
 
-    for i in range(datamodel[2]):
-        func += datamodel[5]*varx[i] - datamodel[6]*vary[i] >= restm[i], f'C{i}'
+        func += x1 == datamodel[4], 'CF'
 
-    func += x1 == datamodel[4], 'CF'
+        for i in range(datamodel[2] - 1):
+            func += varx[i + 1] == varx[i]*(1 - datamodel[3]) + vary[i], f'R{i}'
 
-    for i in range(datamodel[2] - 1):
-        func += varx[i + 1] == varx[i]*(1 - datamodel[3]) + vary[i], f'R{i}'
+        func.solve()
+        vars = []
+        for i in range(datamodel[2]):
+            vars.append(varx[i].value())
 
-    func.solve()
-    vars = []
-    for i in range(datamodel[2]):
-        vars.append(varx[i].value())
+        for i in range(datamodel[2]):
+            vars.append(vary[i].value())
 
-    for i in range(datamodel[2]):
-        vars.append(vary[i].value())
+        costos = [datamodel[0],datamodel[1]]
+        while len(costos)!= len(vars):
+            costos.append(0)
 
-    costos = [datamodel[0],datamodel[1]]
-    while len(costos)!= len(vars):
-        costos.append(0)
+        df = pd.DataFrame({'variables':vars, 'costos':costos})
+        df.to_csv('varsmod.csv')
+        print(func.status)
+        print(func.objective)
 
-    df = pd.DataFrame({'variables':vars, 'costos':costos})
-    df.to_csv('varsmod.csv')
-
-    return func
+        return func
+    except:
+        pass

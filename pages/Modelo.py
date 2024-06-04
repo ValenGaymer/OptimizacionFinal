@@ -3,9 +3,6 @@ from dash import dcc, html
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
-import model as modelo
-import numpy as np
-import csv
 import pandas as pd
 from dash.dependencies import Input, Output, State
 
@@ -79,7 +76,7 @@ layout = dbc.Container([
     [Output('graph1', 'figure'), Output('graph2', 'figure'), Output('res-1','children'), Output('res-2','children')],
     [Input('url', 'pathname'), Input('interval-component', 'n_intervals')]
 )
-def update_graphs(pathname, n):
+def act_graficas(pathname, n):
     # Recargar datos
     x_values, y1_values, y2_values, y3_values, y4_values, y5_values, vars, costos = cargar_datos()
     

@@ -1,12 +1,7 @@
 import dash 
 from dash import dcc, html 
-import plotly.graph_objs as go 
 import dash_bootstrap_components as dbc 
-import model as modelo 
-import numpy as np 
-from dash.dependencies import Input, Output 
-from dash.exceptions import PreventUpdate
-import sys
+
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True) 
 
@@ -24,6 +19,7 @@ app.layout = html.Div([
 ], className="col-8 mx-auto")
 
 app.title = 'V2Solutions'
+
 from pages.Datos import layout, register_callbacks
 
 register_callbacks(app)
