@@ -1,12 +1,11 @@
 import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
-from flask import Flask
 import os
 
-server = Flask(__name__)
-app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True)
 
+app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True)
+server = app.server
 app.layout = html.Div([
     html.Br(),
     html.P("V2 Solutions", className="text-dark text-center fw-bold fs-1"),
