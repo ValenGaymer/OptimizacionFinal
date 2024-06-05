@@ -1,11 +1,10 @@
 import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
-import os
-
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR], use_pages=True, suppress_callback_exceptions=True)
 server = app.server
+
 app.layout = html.Div([
     html.Br(),
     html.P("V2 Solutions", className="text-dark text-center fw-bold fs-1"),
