@@ -34,7 +34,6 @@ x_values, y1_values, y2_values, y3_values, y4_values, y5_values, vars, costos = 
 
 layout = dbc.Container([
     dcc.Location(id='url', refresh=False),  # Componente para detectar cambios en la URL
-    dcc.Interval(id='interval-component', interval=1*1000, n_intervals=0),  # Intervalo para actualizar los datos
     html.Br(),
     dbc.Row([dbc.Col(
         html.H4('Cantidad de trabajadores por mes', style={'text-align': 'center'})
@@ -74,9 +73,9 @@ layout = dbc.Container([
 
 @dash.callback(
     [Output('graph1', 'figure'), Output('graph2', 'figure'), Output('res-1','children'), Output('res-2','children')],
-    [Input('url', 'pathname'), Input('interval-component', 'n_intervals')]
+    Input('url', 'pathname')
 )
-def act_graficas(pathname, n):
+def act_graficas(pathname):
     # Recargar datos
     x_values, y1_values, y2_values, y3_values, y4_values, y5_values, vars, costos = cargar_datos()
     
@@ -155,10 +154,10 @@ def act_graficas(pathname, n):
 
 @dash.callback(
     Output('cards','children'),
-    Input('url', 'pathname'), Input('interval-component', 'n_intervals')
+    Input('url', 'pathname')
 )
 
-def actualizar_card(pathname, n):
+def actualizar_card(pathname):
     x_values, y1_values, y2_values, y3_values, y4_values, y5_values, vars, costos = cargar_datos()
 
     cards = [
